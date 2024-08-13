@@ -1,0 +1,40 @@
+#app {
+  width: 100svw;
+  background-image: url('https://i.pinimg.com/originals/b8/50/85/b850858fed286ddb8c908510a184c9ac.gif');
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+main {
+  width: 80%;
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 2vmin;
+}
+
+.workarea {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 1.5vmin;
+  margin-bottom: 30px;
+}
+.square {
+  background-color: rgb(249, 69, 234);
+  min-height: 100px;
+  min-width: 100px;
+  border-radius: 30%;
+  cursor: pointer;
+  font-size: 50px;
+  font-weight: 500;
+}
+.square:hover {
+  transform: scale(1.03);
+  background-color: rgb(166, 8, 166);
+  transition: 0.2s ease-in;
+}
