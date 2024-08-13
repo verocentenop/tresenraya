@@ -6,26 +6,17 @@ export const functions = () => {
   squares.forEach((square) => {
     square.innerHTML = ''
     square.addEventListener('click', () => {
-      if (!gameOver && square.innerHTML === '') {
+      if (!gameOver && !square.innerHTML && turn === 'X') {
         square.innerHTML = turn
-        checkWinner()
-        checkDraw()
-        changeTurn()
+        if (checkGameStatus()) return
+        turn = 'O'
+        document.querySelector('.focus').style.left = '90px'
+        setTimeout(machineMove, 500)
       }
     })
   })
 
-  const changeTurn = () => {
-    if (turn === 'X') {
-      turn = 'O'
-      document.querySelector('.focus').style.left = '90px'
-    } else {
-      turn = 'X'
-      document.querySelector('.focus').style.left = '0px'
-    }
-  }
-
-  const checkWinner = () => {
+  const checkGameStatus = () => {
     const winConditions = [
       [0, 1, 2],
       [3, 4, 5],
@@ -37,24 +28,32 @@ export const functions = () => {
       [2, 4, 6]
     ]
 
-    winConditions.forEach((condition) => {
-      const [a, b, c] = condition
+    for (const [a, b, c] of winConditions) {
       if (
         squares[a].innerHTML &&
         squares[a].innerHTML === squares[b].innerHTML &&
         squares[a].innerHTML === squares[c].innerHTML
       ) {
         gameOver = true
-        document.querySelector('#resultado').innerHTML = `Ha ganado ${turn}`
+        document.querySelector('#resultado').textContent = `Ha ganado ${turn}`
         document.querySelector('.play-again').style.display = 'inline'
-
-        condition.forEach((index) => {
-          squares[index].style.backgroundColor = 'purple'
-        })
-
-        updateScore(turn) // Actualiza la puntuación de X o O
+        squares[a].style.backgroundColor =
+          squares[b].style.backgroundColor =
+          squares[c].style.backgroundColor =
+            'purple'
+        updateScore(turn)
+        return true
       }
-    })
+    }
+
+    if ([...squares].every((square) => square.innerHTML)) {
+      gameOver = true
+      document.querySelector('#resultado').textContent = 'Empate'
+      document.querySelector('.play-again').style.display = 'inline'
+      return true
+    }
+
+    return false
   }
 
   const updateScore = (winner) => {
@@ -62,26 +61,22 @@ export const functions = () => {
     let wins = parseInt(localStorage.getItem(key)) || 0
     wins += 1
     localStorage.setItem(key, wins)
-
-    const xWins = localStorage.getItem('xWins') || 0
-    const oWins = localStorage.getItem('oWins') || 0
     document.querySelector('.user-info').innerHTML = `
       <p>Usuario: ${localStorage.getItem('username') || 'Invitado'}</p>
-      <p>Victorias de X: ${xWins}</p>
-      <p>Victorias de O: ${oWins}</p>
+      <p>Victorias de X: ${localStorage.getItem('xWins') || 0}</p>
+      <p>Victorias de O: ${localStorage.getItem('oWins') || 0}</p>
     `
   }
-  const checkDraw = () => {
-    if (!gameOver) {
-      let isDraw = true
-      squares.forEach((square) => {
-        if (square.innerHTML === '') isDraw = false
-      })
 
-      if (isDraw) {
-        gameOver = true
-        document.querySelector('#resultado').innerHTML = 'Empate'
-        document.querySelector('.play-again').style.display = 'inline'
+  const machineMove = () => {
+    const emptySquares = [...squares].filter((square) => !square.innerHTML)
+    if (emptySquares.length) {
+      const randomSquare =
+        emptySquares[Math.floor(Math.random() * emptySquares.length)]
+      randomSquare.innerHTML = 'O'
+      if (!checkGameStatus()) {
+        turn = 'X'
+        document.querySelector('.focus').style.left = '0px'
       }
     }
   }
@@ -90,9 +85,8 @@ export const functions = () => {
     gameOver = false
     turn = 'X'
     document.querySelector('.focus').style.left = '0px'
-    document.querySelector('#resultado').innerHTML = ''
+    document.querySelector('#resultado').textContent = ''
     document.querySelector('.play-again').style.display = 'none'
-
     squares.forEach((square) => {
       square.innerHTML = ''
       square.style.removeProperty('background-color')
