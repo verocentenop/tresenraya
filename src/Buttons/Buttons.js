@@ -12,6 +12,11 @@ export const printButtons = () => {
   const menu = document.createElement('button')
   menu.textContent = 'Inicio'
 
+    const menuHref = 'https://vc-games.netlify.app/';
+  menu.onclick = () => {
+    window.location.href = menuHref;
+  };
+
   finalButtons.append(h3, playAgain, menu)
   main.append(finalButtons)
 }
